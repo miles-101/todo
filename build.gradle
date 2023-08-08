@@ -22,11 +22,25 @@ repositories {
 }
 
 dependencies {
+	// spring
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// db
+	implementation 'com.h2database:h2'
+
+	// test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+
+	testImplementation 'org.mockito:mockito-core:3.8.0'
+	testImplementation 'org.mockito:mockito-junit-jupiter:3.8.0'
+	testImplementation 'org.mockito:mockito-inline:3.8.0'
 }
 
 tasks.named('test') {
