@@ -1,9 +1,9 @@
 package com.mockup.project.todo.content.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mockup.project.todo.content.entity.Content;
 import com.mockup.project.todo.content.exception.ContentException;
+import com.mockup.project.todo.content.scheduler.CreateContentScheduler;
 import com.mockup.project.todo.content.service.ContentResponse;
 import com.mockup.project.todo.content.service.ContentService;
 import lombok.extern.slf4j.Slf4j;
@@ -16,11 +16,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -41,6 +39,9 @@ class ContentControllerTest {
     @MockBean
     private ContentService contentService;
 
+    @Autowired
+    private CreateContentScheduler createContentScheduler;
+
     @Nested
     @DisplayName("ContentController createContent 테스트")
     class createAPITest {
@@ -49,7 +50,8 @@ class ContentControllerTest {
         @DisplayName("ContentRequest를 받아서 정상적으로 content로 변환시켜 저장되어야 한다.")
         void createContentTest() throws Exception {
             //given
-            ContentAPI.ContentRequest contentRequest = new ContentAPI.ContentRequest("내용", "내용 디테일", LocalDateTime.now(), LocalDateTime.now().plusHours(1));
+            // 기본 생성자 없으면 오류... why?
+            ContentAPI.ContentRequest contentRequest = new ContentAPI.ContentRequest("내용", "내용 디테일", LocalDateTime.now(), LocalDateTime.now().plusHours(1), null);
 
             //when
             when(contentService.createContent(any())).thenReturn(new ContentResponse("내용", "내용 디테일", LocalDateTime.now(), LocalDateTime.now().plusHours(1)));

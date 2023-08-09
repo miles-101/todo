@@ -1,5 +1,6 @@
 package com.mockup.project.todo.content.controller;
 
+import com.mockup.project.todo.content.scheduler.CreateContentScheduler;
 import com.mockup.project.todo.content.service.ContentResponse;
 import com.mockup.project.todo.content.service.ContentService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.List;
 public class ContentController {
 
     private final ContentService contentService;
+    private final CreateContentScheduler createContentScheduler;
 
     @GetMapping("/{id}")
     public ContentAPI.ContentResponse getContent(@PathVariable Long id){
@@ -27,8 +29,11 @@ public class ContentController {
         return contentService.getAllContent().stream().map(ContentResponse::toContentAPIResponse).toList();
     }
 
+    // TODO 스케쥴러 api를 따로 뺴서 사용하는게 좋은지, 아니면 하나의 api로 사용하는게 좋은지 고민해보기
     @PostMapping("/")
     public ContentAPI.ContentResponse createContent(@RequestBody @Valid ContentAPI.ContentRequest contentRequest){
+        if(contentRequest.getReservationDateTime() != null)
+            return createContentScheduler.addTask(contentRequest);
         return contentService.createContent(contentRequest.toContentRequest()).toContentAPIResponse();
     }
 
