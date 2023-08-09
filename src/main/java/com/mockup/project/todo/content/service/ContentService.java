@@ -1,6 +1,7 @@
 package com.mockup.project.todo.content.service;
 
 import com.mockup.project.todo.content.entity.Content;
+import com.mockup.project.todo.content.exception.ContentException;
 import com.mockup.project.todo.content.repository.ContentRepository;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +26,14 @@ public class ContentService {
     }
 
     public ContentResponse getContent(Long id){
-        Content content = contentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당하는 id가 없습니다."));
+        Content content = contentRepository.findById(id).orElseThrow(() -> new ContentException("해당하는 id가 없습니다."));
         return content.toContentResponse();
     }
 
     public ContentResponse updateContent(Long id, ContentRequest contentRequest){
-        Content content = contentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당하는 id가 없습니다."));
+        Content content = contentRepository.findById(id).orElseThrow(() -> new ContentException("해당하는 id가 없습니다."));
         content.updateContent(contentRequest);
+        contentRepository.save(content);
         return content.toContentResponse();
     }
 

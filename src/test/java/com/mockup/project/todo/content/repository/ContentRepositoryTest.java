@@ -1,6 +1,7 @@
 package com.mockup.project.todo.content.repository;
 
 import com.mockup.project.todo.content.entity.Content;
+import com.mockup.project.todo.content.exception.ContentException;
 import com.mockup.project.todo.content.service.ContentRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +53,7 @@ class ContentRepositoryTest {
             // given
             Content save = contentRepository.save(new Content("내용", "내용 디테일", LocalDateTime.now(), LocalDateTime.now().plusHours(1)));
             // when
-            Content content = contentRepository.findById(save.getId()).orElseThrow(() -> new IllegalArgumentException("해당하는 id가 없습니다."));
+            Content content = contentRepository.findById(save.getId()).orElseThrow(() -> new ContentException("해당하는 id가 없습니다."));
             // then
             assertEquals(save.getId(), content.getId());
         }
@@ -63,8 +64,8 @@ class ContentRepositoryTest {
             //given
             Long id = 100L;
             //when then
-            assertThrows(IllegalArgumentException.class, () -> contentRepository.findById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("해당하는 id가 없습니다.")));
+            assertThrows(ContentException.class, () -> contentRepository.findById(id)
+                    .orElseThrow(() -> new ContentException("해당하는 id가 없습니다.")));
         }
     }
 
@@ -77,7 +78,7 @@ class ContentRepositoryTest {
             //given
             Content save = contentRepository.save(new Content("내용", "내용 디테일", LocalDateTime.now(), LocalDateTime.now().plusHours(1)));
             //when
-            Content content = contentRepository.findById(save.getId()).orElseThrow(() -> new IllegalArgumentException("해당하는 id가 없습니다."));
+            Content content = contentRepository.findById(save.getId()).orElseThrow(() -> new ContentException("해당하는 id가 없습니다."));
 
             ContentRequest contentRequest = new ContentRequest("수정된 내용", "수정된 내용 디테일", save.getStartDateTime(),save.getEndDateTime());
             content.updateContent(contentRequest);

@@ -1,6 +1,7 @@
 package com.mockup.project.todo.content.service;
 
 import com.mockup.project.todo.content.entity.Content;
+import com.mockup.project.todo.content.exception.ContentException;
 import com.mockup.project.todo.content.repository.ContentRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -63,13 +64,13 @@ class ContentServiceTest {
         }
 
         @Test
-        @DisplayName("id에 해당하는 데이터가 존재하지 않을 때에는 IllegalArgumentException이 발생해야한다.")
+        @DisplayName("id에 해당하는 데이터가 존재하지 않을 때에는 ContentException 발생해야한다.")
         void getContentErrorTest(){
             //given
             when(contentRepository.findById(any())).thenReturn(java.util.Optional.empty());
             //when
             //then
-            assertThrows(IllegalArgumentException.class, () -> contentService.getContent(1L));
+            assertThrows(ContentException.class, () -> contentService.getContent(1L));
         }
 
     }
