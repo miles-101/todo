@@ -3,11 +3,15 @@ package com.mockup.project.todo.content.controller;
 import com.mockup.project.todo.content.scheduler.CreateContentScheduler;
 import com.mockup.project.todo.content.service.ContentResponse;
 import com.mockup.project.todo.content.service.ContentService;
+import com.mockup.project.todo.util.MessageUtil;
+import com.mockup.project.todo.util.naver.NaverSms;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -18,7 +22,7 @@ public class ContentController {
 
     private final ContentService contentService;
     private final CreateContentScheduler createContentScheduler;
-
+    private final MessageUtil messageUtil;
     @GetMapping("/{id}")
     public ContentAPI.ContentResponse getContent(@PathVariable Long id){
         return contentService.getContent(id).toContentAPIResponse();
@@ -30,8 +34,21 @@ public class ContentController {
     }
 
     // TODO 스케쥴러 api를 따로 뺴서 사용하는게 좋은지, 아니면 하나의 api로 사용하는게 좋은지 고민해보기
+
+    // TODO 예약 로직을 어떻게 해야하는지 고민해보기. 스케쥴러로 post 요청 보내기 vs 미리 저장해놓고, 보여줄때 reservationDateTime이 현재보다 작은 것만 보여주기.
     @PostMapping("/")
     public ContentAPI.ContentResponse createContent(@RequestBody @Valid ContentAPI.ContentRequest contentRequest){
+
+        log.info("남은 시간 : {}",Duration.between(LocalDateTime.now(), contentRequest.getEndDateTime()).toMinutes());
+        if(Duration.between(LocalDateTime.now(), contentRequest.getEndDateTime()).toMinutes() < 60 ){
+            messageUtil.sendMessages(contentRequest);
+        }else{
+            log.info("남은 시간이 60분 이상이므로 스케쥴러에 등록합니다.");
+            ContentAPI.ContentResponse contentResponse = createContentScheduler.dueToAlarmAddTask(contentRequest);
+            log.info("deu date alarm : {}", contentResponse.toString());
+        }
+
+
         if(contentRequest.getReservationDateTime() != null)
             return createContentScheduler.addTask(contentRequest);
         return contentService.createContent(contentRequest.toContentRequest()).toContentAPIResponse();

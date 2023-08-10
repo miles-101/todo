@@ -39,7 +39,7 @@ class ContentControllerTest {
     @MockBean
     private ContentService contentService;
 
-    @Autowired
+    @MockBean
     private CreateContentScheduler createContentScheduler;
 
     @Nested

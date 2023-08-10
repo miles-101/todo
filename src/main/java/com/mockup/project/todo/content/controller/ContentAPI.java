@@ -33,16 +33,28 @@ public class ContentAPI {
         }
 
         // TODO naming 고치기 중복
-        public com.mockup.project.todo.content.service.ContentRequest toContentRequest(){
+        public com.mockup.project.todo.content.service.ContentRequest toContentRequest() {
             return new com.mockup.project.todo.content.service.ContentRequest(content, contentDetail, startDateTime, endDateTime);
         }
 
-        public void clearReservationDateTime(){
+        public void clearReservationDateTime() {
             this.reservationDateTime = null;
         }
 
 
+        public String toMessage() {
+            return String.format(
+                    """
+                            "%s" 마감 한시간전입니다.
+                            %s
+                            서둘러 일을 마무리해주세요!  
+                            """,
+                    this.content,
+                    this.contentDetail
+            );
+        }
     }
+
 
     @Getter
     @AllArgsConstructor
@@ -55,4 +67,5 @@ public class ContentAPI {
         private LocalDateTime startDateTime;
         private LocalDateTime endDateTime;
     }
+
 }
