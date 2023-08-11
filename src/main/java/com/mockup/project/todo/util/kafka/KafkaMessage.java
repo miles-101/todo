@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Getter
@@ -14,4 +15,6 @@ public class KafkaMessage implements Serializable {
 
     MessageType messageType;
     String messageContent;
+    ContentAPI.ContentRequest contentRequest;
+    LocalDateTime sendDateTime;
 }

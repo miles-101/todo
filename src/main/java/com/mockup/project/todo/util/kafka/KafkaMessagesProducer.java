@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @AllArgsConstructor
 @Component
@@ -16,6 +18,6 @@ public class KafkaMessagesProducer {
     public void sendKafkaMessages(MessageType messageType,ContentAPI.ContentRequest contentRequest){
         log.info("contentRequest = {}", contentRequest);
 
-        kafkaTemplate.send("messages", new KafkaMessage(messageType, contentRequest.toMessage()));
+        kafkaTemplate.send("messages", new KafkaMessage(messageType, contentRequest.toMessage(), contentRequest, LocalDateTime.now()));
     }
 }

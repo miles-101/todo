@@ -22,7 +22,6 @@ public class ContentController {
 
     private final ContentService contentService;
     private final CreateContentScheduler createContentScheduler;
-    private final MessageUtil messageUtil;
     @GetMapping("/{id}")
     public ContentAPI.ContentResponse getContent(@PathVariable Long id){
         return contentService.getContent(id).toContentAPIResponse();
@@ -39,16 +38,9 @@ public class ContentController {
     @PostMapping("/")
     public ContentAPI.ContentResponse createContent(@RequestBody @Valid ContentAPI.ContentRequest contentRequest){
 
-        log.info("남은 시간 : {}",Duration.between(LocalDateTime.now(), contentRequest.getEndDateTime()).toMinutes());
-        if(Duration.between(LocalDateTime.now(), contentRequest.getEndDateTime()).toMinutes() < 60 ){
-            messageUtil.sendMessages(contentRequest);
-        }else{
-            log.info("남은 시간이 60분 이상이므로 스케쥴러에 등록합니다.");
-            ContentAPI.ContentResponse contentResponse = createContentScheduler.dueToAlarmAddTask(contentRequest);
-            log.info("deu date alarm : {}", contentResponse.toString());
-        }
+        contentService.setAlarm(contentRequest);
 
-
+        // 등록 or 예약 등록
         if(contentRequest.getReservationDateTime() != null)
             return createContentScheduler.addTask(contentRequest);
         return contentService.createContent(contentRequest.toContentRequest()).toContentAPIResponse();

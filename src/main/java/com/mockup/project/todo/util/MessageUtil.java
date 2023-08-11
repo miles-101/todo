@@ -34,9 +34,10 @@ public class MessageUtil {
         request.put("text", contentRequest.toMessage());
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request);
-        String slackChanelUrl = "https://hooks.slack.com/services/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";
+        String slackChanelUrl = "https://hooks.slack.com/services/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";
 
         restTemplate.exchange(slackChanelUrl, org.springframework.http.HttpMethod.POST, entity, String.class);
+        kafkaMessagesProducer.sendKafkaMessages(MessageType.SLACK_SENT, contentRequest);
     }
 
     public void sendEmailMessage(ContentAPI.ContentRequest contentRequest) {
@@ -48,12 +49,24 @@ public class MessageUtil {
         message.setSubject("todo alarm : " + contentRequest.getContent() + "마감 한시간 전입니다.");
         message.setText(contentRequest.toMessage());
         javaMailSender.send(message);
+        kafkaMessagesProducer.sendKafkaMessages(MessageType.EMAIL_SENT, contentRequest);
+    }
+
+    public void sendMessageToAdmin(String report) {
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("miles@101.inc");
+        message.setTo("ubs4939@naver.com");
+        message.setSubject("todo alarm to admin: 전날 메시지 발송 횟수입니다.");
+        message.setText(report);
+        javaMailSender.send(message);
     }
 
     public void sendNaverMessage(ContentAPI.ContentRequest contentRequest) {
         log.info("naver message : {}", contentRequest.toString());
         try {
             naverSms.sendMessage("01093892230", contentRequest);
+            kafkaMessagesProducer.sendKafkaMessages(MessageType.SMS_SENT, contentRequest);
         } catch (Exception e) {
             log.error("sms 전송 실패 : {}", e.getMessage());
         }
@@ -62,11 +75,8 @@ public class MessageUtil {
 
     public void sendMessages(ContentAPI.ContentRequest contentRequest){
         sendSlackMessage(contentRequest);
-        kafkaMessagesProducer.sendKafkaMessages(MessageType.SLACK_SENT, contentRequest);
         sendEmailMessage(contentRequest);
-        kafkaMessagesProducer.sendKafkaMessages(MessageType.EMAIL_SENT, contentRequest);
 //        sendNaverMessage(contentRequest);
-        kafkaMessagesProducer.sendKafkaMessages(MessageType.SMS_SENT, contentRequest);
     }
 
 }
