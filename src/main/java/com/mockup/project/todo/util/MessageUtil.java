@@ -34,7 +34,7 @@ public class MessageUtil {
         request.put("text", contentRequest.toMessage());
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request);
-        String slackChanelUrl = "https://hooks.slack.com/services/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";
+        String slackChanelUrl = "https://hooks.slack.com/services/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";
 
         restTemplate.exchange(slackChanelUrl, org.springframework.http.HttpMethod.POST, entity, String.class);
         kafkaMessagesProducer.sendKafkaMessages(MessageType.SLACK_SENT, contentRequest);
@@ -76,7 +76,7 @@ public class MessageUtil {
     public void sendMessages(ContentAPI.ContentRequest contentRequest) {
         sendSlackMessage(contentRequest);
         sendEmailMessage(contentRequest);
-        sendNaverMessage(contentRequest);
+//        sendNaverMessage(contentRequest);
     }
 
 }
