@@ -1,60 +1,62 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '2.7.14'
-	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'java'
+    id 'org.springframework.boot' version '2.7.14'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 }
 
 group = 'com.mockup.project'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = "17"
+    sourceCompatibility = "17"
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	// spring
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-mail'
+    // spring
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 
-	// lombok
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+    // lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
-	// db
-	implementation 'com.h2database:h2'
+    // db
+    implementation 'com.h2database:h2'
 
-	// kafka
-	implementation 'org.springframework.kafka:spring-kafka'
+    // kafka
+    implementation 'org.springframework.kafka:spring-kafka'
 
-	// redis
-	implementation 'redis.clients:jedis:4.4.3'
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    // redis
+    implementation 'redis.clients:jedis:4.4.3'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-	implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
+
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
 
-	// test
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testCompileOnly 'org.projectlombok:lombok'
-	testAnnotationProcessor 'org.projectlombok:lombok'
+    // test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 
-	testImplementation 'org.mockito:mockito-core:3.8.0'
-	testImplementation 'org.mockito:mockito-junit-jupiter:3.8.0'
-	testImplementation 'org.mockito:mockito-inline:3.8.0'
+    testImplementation 'org.mockito:mockito-core:3.8.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:3.8.0'
+    testImplementation 'org.mockito:mockito-inline:3.8.0'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }

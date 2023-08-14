@@ -1,13 +1,19 @@
 package com.mockup.project.todo.content.controller;
 
-import com.mockup.project.todo.content.scheduler.CreateContentScheduler;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mockup.project.todo.content.scheduler.ContentScheduler;
 import com.mockup.project.todo.content.service.ContentResponse;
 import com.mockup.project.todo.content.service.ContentService;
+import com.mockup.project.todo.util.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @Slf4j
@@ -17,7 +23,8 @@ import java.util.List;
 public class ContentController {
 
     private final ContentService contentService;
-    private final CreateContentScheduler createContentScheduler;
+    private final RedisService redisService;
+    private final ContentScheduler createContentScheduler;
 
     @GetMapping("/{id}")
     public ContentAPI.ContentResponse getContent(@PathVariable Long id) {
@@ -33,17 +40,19 @@ public class ContentController {
 
     // TODO 예약 로직을 어떻게 해야하는지 고민해보기. 스케쥴러로 post 요청 보내기 vs 미리 저장해놓고, 보여줄때 reservationDateTime이 현재보다 작은 것만 보여주기.
     @PostMapping("/")
+    @ExceptionHandler({UnsupportedEncodingException.class, NoSuchAlgorithmException.class, URISyntaxException.class, InvalidKeyException.class, JsonProcessingException.class})
     public ContentAPI.ContentResponse createContent(@RequestBody @Valid ContentAPI.ContentRequest contentRequest) {
 
         ContentAPI.ContentResponse contentResponse;
 
         // 등록 or 예약 등록
         if (contentRequest.getReservationDateTime() != null) {
-            contentResponse = createContentScheduler.addTask(contentRequest);
+            redisService.saveCreateTask(contentRequest);
+            contentResponse = createContentScheduler.createAddTask(contentRequest);
         } else {
             contentResponse = contentService.createContent(contentRequest.toContentRequest()).toContentAPIResponse();
+            contentService.setAlarm(contentRequest);
         }
-        contentService.setAlarm(contentRequest);
         return contentResponse;
     }
 

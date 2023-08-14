@@ -1,5 +1,6 @@
 package com.mockup.project.todo.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,12 +26,17 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+    public RedisTemplate<?, ?> redisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<byte[], byte[]> redisTemplate = new RedisTemplate<>();
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
 
         redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer()); // JSON 포맷으로 저장
-
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper)); // JSON 포맷으로 저장
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
         redisTemplate.setConnectionFactory(connectionFactory);
         return redisTemplate;
     }
