@@ -3,7 +3,7 @@ package com.mockup.project.todo.content.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mockup.project.todo.content.entity.Content;
 import com.mockup.project.todo.content.exception.ContentException;
-import com.mockup.project.todo.content.scheduler.CreateContentScheduler;
+import com.mockup.project.todo.content.scheduler.ContentScheduler;
 import com.mockup.project.todo.content.service.ContentResponse;
 import com.mockup.project.todo.content.service.ContentService;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ class ContentControllerTest {
     private ContentService contentService;
 
     @MockBean
-    private CreateContentScheduler createContentScheduler;
+    private ContentScheduler createContentScheduler;
 
     @Nested
     @DisplayName("ContentController createContent 테스트")
@@ -68,7 +68,7 @@ class ContentControllerTest {
 
         @Test
         @DisplayName("ContentRequest에 content가 없을 경우에는 400에러가 발생해야 한다.")
-        void createContentErrorTest() throws Exception{
+        void createContentErrorTest() throws Exception {
             //given
             ContentAPI.ContentRequest contentRequest = new ContentAPI.ContentRequest("", "내용 디테일", LocalDateTime.now(), LocalDateTime.now().plusHours(1));
             //then
@@ -84,11 +84,11 @@ class ContentControllerTest {
 
     @Nested
     @DisplayName("ContentController getContent 테스트")
-    class getControllerTest{
+    class getControllerTest {
 
         @Test
         @DisplayName("id에 해당하는 데이터가 존재할 때에는 데이터가 조회되어야한다.")
-        void getContentTest() throws Exception{
+        void getContentTest() throws Exception {
             //given
             Long id = 1L;
             Content content = new Content("내용", "내용 디테일", LocalDateTime.now(), LocalDateTime.now().plusHours(1));
@@ -106,11 +106,11 @@ class ContentControllerTest {
 
         @Test
         @DisplayName("id에 해당하는 데이터가 존재하지 않을 때에는 not found 에러가 발생해야한다.")
-        void getContentErrorTest() throws Exception{
+        void getContentErrorTest() throws Exception {
             //given
             Long id = 1L;
             //when
-            when(contentService.getContent(id)).thenThrow(new ContentException(400,"해당하는 id가 없습니다."));
+            when(contentService.getContent(id)).thenThrow(new ContentException(400, "해당하는 id가 없습니다."));
             //then
             mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/content/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON))
@@ -123,11 +123,11 @@ class ContentControllerTest {
 
     @Nested
     @DisplayName("ContentController updateContent 테스트")
-    class updateTest{
+    class updateTest {
 
         @Test
         @DisplayName("파라미터가 정상적으로 들어올 때에는 데이터가 수정되어야 한다.")
-        void updateContentTest() throws Exception{
+        void updateContentTest() throws Exception {
             //given
             Long contentId = 1L;
             ContentResponse updatedContentResponse = new ContentResponse("변경된 내용", "변경된 내용 디테일", LocalDateTime.now(), LocalDateTime.now().plusHours(1));
@@ -146,7 +146,7 @@ class ContentControllerTest {
 
         @Test
         @DisplayName("파라미터가 정상적으로 들어오지 않을 때에는 400에러가 발생해야 한다.")
-        void updateContentErrorTest() throws Exception{
+        void updateContentErrorTest() throws Exception {
             //given
             Long contentId = 1L;
             ContentResponse updatedContentResponse = new ContentResponse("", "변경된 내용 디테일", LocalDateTime.now(), LocalDateTime.now().plusHours(1));
@@ -161,12 +161,12 @@ class ContentControllerTest {
 
         @Test
         @DisplayName("존재하지않는 ID로 요청할 경우 404에러가 발생해야 한다.")
-        void notExistIdUpdateContentErrorTest() throws Exception{
+        void notExistIdUpdateContentErrorTest() throws Exception {
             //given
             Long contentId = 1L;
             ContentResponse updatedContentResponse = new ContentResponse("변경된 내용", "변경된 내용 디테일", LocalDateTime.now(), LocalDateTime.now().plusHours(1));
             //when
-            when(contentService.updateContent(anyLong(), any())).thenThrow(new ContentException(400,"해당하는 id가 없습니다."));
+            when(contentService.updateContent(anyLong(), any())).thenThrow(new ContentException(400, "해당하는 id가 없습니다."));
             //then
             mockMvc.perform(put("/api/v1/content/{id}", contentId)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -179,10 +179,10 @@ class ContentControllerTest {
 
     @Nested
     @DisplayName("ContentController deleteContent 테스트")
-    class deleteTest{
+    class deleteTest {
         @Test
         @DisplayName("id에 해당하는 데이터가 존재할 때에는 문제없이 200이 나와야한다.")
-        void deleteContentTest() throws Exception{
+        void deleteContentTest() throws Exception {
             //given
             Long id = 1L;
             //then
@@ -195,11 +195,11 @@ class ContentControllerTest {
 
         @Test
         @DisplayName("id에 해당하는 데이터가 존재하지 않을 때에는 not found 에러가 발생해야한다.")
-        void deleteContentErrorTest() throws Exception{
+        void deleteContentErrorTest() throws Exception {
             //given
             Long id = 1L;
             //when
-            when(contentService.getContent(id)).thenThrow(new ContentException(400,"해당하는 id가 없습니다."));
+            when(contentService.getContent(id)).thenThrow(new ContentException(400, "해당하는 id가 없습니다."));
             //then
             mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/content/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON))
