@@ -9,33 +9,25 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 
 @Slf4j
 @Component
 @AllArgsConstructor
 public class KafkaMessagesConsumer {
-    //TODO 하루에 한번씩 컨슘해서 레디스에 업로드하도록 변경.
-//    @KafkaListener(topics = "messages", groupId = "recording-group")
-//    public void consume(KafkaMessage message) throws Exception {
-//      log.info("message type= {}", message.messageType);
-//      log.info("message content= {}", message.messageContent);
-//    }
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final MessageUtil messageUtil;
 
-    @Scheduled(cron = "*/30 * * * * *")
+    // TODO kafka 에서 데이터 로그를 어떻게 처리할것인가? 생명 주기는?
+    @Scheduled(cron = "0 0 0 * * *")
     public void consumeMessagesOncePerDay() {
         log.info("스프링 스케쥴러");
         KafkaConsumer<String, KafkaMessage> kafkaConsumer = createKafkaConsumer();

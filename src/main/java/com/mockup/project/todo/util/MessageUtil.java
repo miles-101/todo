@@ -73,10 +73,10 @@ public class MessageUtil {
 
     }
 
-    public void sendMessages(ContentAPI.ContentRequest contentRequest){
+    public void sendMessages(ContentAPI.ContentRequest contentRequest) {
         sendSlackMessage(contentRequest);
         sendEmailMessage(contentRequest);
-//        sendNaverMessage(contentRequest);
+        sendNaverMessage(contentRequest);
     }
 
 }
