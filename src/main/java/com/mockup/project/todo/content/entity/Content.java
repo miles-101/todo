@@ -29,6 +29,16 @@ public class Content {
 
     private LocalDateTime endDateTime;
 
+    private LocalDateTime reservationDateTime;
+
+    public Content(String content, String contentDetail, LocalDateTime startDateTime, LocalDateTime endDateTime, LocalDateTime reservationDateTime) {
+        this.content = content;
+        this.contentDetail = contentDetail;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.reservationDateTime = reservationDateTime;
+    }
+
     public Content(String content, String contentDetail, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         this.content = content;
         this.contentDetail = contentDetail;
@@ -36,7 +46,7 @@ public class Content {
         this.endDateTime = endDateTime;
     }
 
-    public ContentResponse toContentResponse(){
+    public ContentResponse toContentResponse() {
         return new ContentResponse(content, contentDetail, startDateTime, endDateTime);
     }
 
@@ -45,5 +55,6 @@ public class Content {
         this.contentDetail = contentRequest.getContentDetail();
         this.startDateTime = contentRequest.getStartDateTime();
         this.endDateTime = contentRequest.getEndDateTime();
+        this.reservationDateTime = contentRequest.getReservationDateTime();
     }
 }

@@ -4,7 +4,6 @@ import com.mockup.project.todo.content.controller.ContentAPI;
 import com.mockup.project.todo.content.entity.Content;
 import com.mockup.project.todo.content.exception.ContentException;
 import com.mockup.project.todo.content.repository.ContentRepository;
-import com.mockup.project.todo.content.scheduler.ContentScheduler;
 import com.mockup.project.todo.util.MessageUtil;
 import com.mockup.project.todo.util.redis.RedisService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,7 @@ import java.util.List;
 public class ContentService {
 
     private final ContentRepository contentRepository;
-    private final ContentScheduler createContentScheduler;
+    //    private final ContentScheduler createContentScheduler;
     private final MessageUtil messageUtil;
     private final RedisService redisService;
 
@@ -30,6 +29,10 @@ public class ContentService {
     public ContentResponse createContent(ContentRequest contentRequest) {
         Content save = contentRepository.save(contentRequest.toContent());
         return save.toContentResponse();
+    }
+
+    public ContentResponse createReservation(ContentRequest contentRequest) {
+        return redisService.saveCreateReservation(contentRequest);
     }
 
     @Transactional(readOnly = true)
@@ -70,8 +73,7 @@ public class ContentService {
         } else {
             log.info("남은 시간이 60분 이상이므로 스케쥴러에 등록합니다.");
             redisService.saveDueToAlarmTask(contentRequest);
-            createContentScheduler.dueToAlarmAddTask(contentRequest);
+//            createContentScheduler.dueToAlarmAddTask(contentRequest);
         }
     }
-
 }

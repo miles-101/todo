@@ -1,10 +1,8 @@
 package com.mockup.project.todo.content.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.mockup.project.todo.content.scheduler.ContentScheduler;
 import com.mockup.project.todo.content.service.ContentResponse;
 import com.mockup.project.todo.content.service.ContentService;
-import com.mockup.project.todo.util.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +21,6 @@ import java.util.List;
 public class ContentController {
 
     private final ContentService contentService;
-    private final RedisService redisService;
-    private final ContentScheduler createContentScheduler;
 
     @GetMapping("/{id}")
     public ContentAPI.ContentResponse getContent(@PathVariable Long id) {
@@ -46,10 +42,12 @@ public class ContentController {
         ContentAPI.ContentResponse contentResponse;
 
         // 등록 or 예약 등록
-        if (contentRequest.getReservationDateTime() != null) {
-            redisService.saveCreateTask(contentRequest);
-            contentResponse = createContentScheduler.createAddTask(contentRequest);
+        if (contentRequest.getReservationDateTime() != null &&
+                contentRequest.getReservationDateTime().isAfter(contentRequest.getStartDateTime())) {
+            // 예약
+            contentResponse = contentService.createReservation(contentRequest.toContentRequest()).toContentAPIResponse();
         } else {
+            // 등록
             contentResponse = contentService.createContent(contentRequest.toContentRequest()).toContentAPIResponse();
             contentService.setAlarm(contentRequest);
         }
