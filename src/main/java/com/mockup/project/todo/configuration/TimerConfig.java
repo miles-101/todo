@@ -1,4 +1,4 @@
-package com.mockup.project.todo.content.config;
+package com.mockup.project.todo.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +11,7 @@ import java.util.Timer;
 public class TimerConfig {
 
     @Bean
-    public Timer timer(){
+    public Timer timer() {
         return new Timer();
     }
 }
