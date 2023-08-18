@@ -1,14 +1,18 @@
 package com.mockup.project.todo.util.naver;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mockup.project.todo.content.controller.ContentAPI;
+import com.mockup.project.todo.util.JsonMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -20,33 +24,28 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.Builder;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class NaverSms {
+
+    private final JsonMapper jsonMapper;
 
     @Value("${naver.cloud-sms.accessKey}")
     private String accessKey;
-
     @Value("${naver.cloud-sms.secretKey}")
     private String secretKey;
-
     @Value("${naver.cloud-sms.serviceId}")
     private String serviceId;
-
     @Value("${naver.cloud-sms.senderPhoneNumber}")
     private String senderPhoneNumber;
 
     public String makeSignature(Long time) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
-        String space = " ";					// one space
-        String newLine = "\n";					// new line
-        String method = "POST";					// method
-        String url = "/sms/v2/services/"+ this.serviceId+"/messages";	// url (include query string)
-        String timestamp = time.toString();			// current timestamp (epoch)
+        String space = " ";                    // one space
+        String newLine = "\n";                    // new line
+        String method = "POST";                    // method
+        String url = "/sms/v2/services/" + this.serviceId + "/messages";    // url (include query string)
+        String timestamp = time.toString();            // current timestamp (epoch)
 
         String message = new StringBuilder()
                 .append(method)
@@ -93,10 +92,8 @@ public class NaverSms {
                 .build();
 
         log.info("messageRequest 생성 완료");
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String body = objectMapper.writeValueAsString(messageRequest);
-        log.info("body 생성 완료 : {}",body);
+        String body = jsonMapper.objectToJson(messageRequest);
+        log.info("body 생성 완료 : {}", body);
         HttpEntity<String> httpEntity = new HttpEntity<>(body, headers);
 
         log.info("httpEntity 생성 완료");
@@ -104,8 +101,8 @@ public class NaverSms {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
 
-        NaverSmsDTO.MessageResponse messageResponse = restTemplate.postForObject(new URI("https://sens.apigw.ntruss.com/sms/v2/services/"+ serviceId +"/messages"), httpEntity, NaverSmsDTO.MessageResponse.class);
-        log.info("messageResponse 생성 완료 : {}", messageResponse.toString());
+        NaverSmsDTO.MessageResponse messageResponse = restTemplate.postForObject(new URI("https://sens.apigw.ntruss.com/sms/v2/services/" + serviceId + "/messages"), httpEntity, NaverSmsDTO.MessageResponse.class);
+        log.info("messageResponse 생성 완료 : {}", messageResponse);
 
         return messageResponse;
     }
