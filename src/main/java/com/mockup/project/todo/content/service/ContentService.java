@@ -10,6 +10,7 @@ import com.mockup.project.todo.util.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -25,21 +26,25 @@ public class ContentService {
     private final MessageUtil messageUtil;
     private final RedisService redisService;
 
+    @Transactional
     public ContentResponse createContent(ContentRequest contentRequest) {
         Content save = contentRepository.save(contentRequest.toContent());
         return save.toContentResponse();
     }
 
+    @Transactional(readOnly = true)
     public List<ContentResponse> getAllContent() {
         List<Content> all = contentRepository.findAll();
         return all.stream().map(Content::toContentResponse).toList();
     }
 
+    @Transactional(readOnly = true)
     public ContentResponse getContent(Long id) {
         Content content = contentRepository.findById(id).orElseThrow(() -> new ContentException("해당하는 id가 없습니다."));
         return content.toContentResponse();
     }
 
+    @Transactional
     public ContentResponse updateContent(Long id, ContentRequest contentRequest) {
         Content content = contentRepository.findById(id).orElseThrow(() -> new ContentException("해당하는 id가 없습니다."));
         content.updateContent(contentRequest);
@@ -47,10 +52,12 @@ public class ContentService {
         return content.toContentResponse();
     }
 
+    @Transactional
     public void deleteContent(Long id) {
         contentRepository.deleteById(id);
     }
 
+    @Transactional
     public void deleteAllContent() {
         contentRepository.deleteAll();
     }
