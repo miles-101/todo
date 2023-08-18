@@ -29,6 +29,10 @@ public class RedisRepository {
         redisTemplate.opsForSet().remove(key, value);
     }
 
+    public void deleteHashByKey(String key) {
+        redisTemplate.delete(key);
+    }
+
     public List<Object> getHashData(String key) {
         List<Object> list = new ArrayList<>();
         redisTemplate.opsForHash().entries(key).forEach((hashKey, value) -> {

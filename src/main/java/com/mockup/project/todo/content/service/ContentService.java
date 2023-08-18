@@ -21,7 +21,6 @@ import java.util.List;
 public class ContentService {
 
     private final ContentRepository contentRepository;
-    //    private final ContentScheduler createContentScheduler;
     private final MessageUtil messageUtil;
     private final RedisService redisService;
 
@@ -57,11 +56,16 @@ public class ContentService {
 
     @Transactional
     public void deleteContent(Long id) {
+        Content content = contentRepository.findById(id).orElseThrow(() -> new ContentException("해당하는 id가 없습니다."));
+        redisService.deleteHash("createTask", content.getContent() + "_" + content.getReservationDateTime());
+        redisService.deleteHash("dueToAlarmTask", content.getContent() + "_" + content.getEndDateTime());
         contentRepository.deleteById(id);
     }
 
     @Transactional
     public void deleteAllContent() {
+        redisService.deleteHashByKey("createTask");
+        redisService.deleteHashByKey("dueToAlarmTask");
         contentRepository.deleteAll();
     }
 
@@ -73,7 +77,6 @@ public class ContentService {
         } else {
             log.info("남은 시간이 60분 이상이므로 스케쥴러에 등록합니다.");
             redisService.saveDueToAlarmTask(contentRequest);
-//            createContentScheduler.dueToAlarmAddTask(contentRequest);
         }
     }
 }

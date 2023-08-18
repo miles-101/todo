@@ -29,6 +29,14 @@ public class RedisService {
         String hashKey = contentRequest.getContent() + "_" + contentRequest.getEndDateTime();
 
         redisRepository.saveHash(key, hashKey, contentRequest);
-        log.info("레디스 dueToAlarmTask 저장 완료 : {}", contentRequest.toString());
+        log.info("레디스 dueToAlarmTask 저장 완료 : {}", contentRequest);
+    }
+
+    public void deleteHash(String key, String hashKey) {
+        redisRepository.deleteHash(key, hashKey);
+    }
+
+    public void deleteHashByKey(String key) {
+        redisRepository.deleteHashByKey(key);
     }
 }

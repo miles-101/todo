@@ -34,11 +34,7 @@ public class ContentAPI {
 
         // TODO naming 고치기 중복
         public com.mockup.project.todo.content.service.ContentRequest toContentRequest() {
-            return new com.mockup.project.todo.content.service.ContentRequest(content, contentDetail, startDateTime, endDateTime);
-        }
-
-        public void clearReservationDateTime() {
-            this.reservationDateTime = null;
+            return new com.mockup.project.todo.content.service.ContentRequest(content, contentDetail, startDateTime, endDateTime, reservationDateTime);
         }
 
 

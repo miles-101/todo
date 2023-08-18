@@ -14,9 +14,10 @@ public class ContentRequest {
     private String contentDetail;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
+    private LocalDateTime reservationDateTime;
 
 
-    public Content toContent(){
-        return new Content(content, contentDetail, startDateTime, endDateTime);
+    public Content toContent() {
+        return new Content(content, contentDetail, startDateTime, endDateTime, reservationDateTime);
     }
 }
