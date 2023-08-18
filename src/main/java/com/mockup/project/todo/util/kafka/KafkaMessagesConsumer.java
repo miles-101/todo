@@ -1,14 +1,13 @@
 package com.mockup.project.todo.util.kafka;
 
 import com.mockup.project.todo.util.MessageUtil;
+import com.mockup.project.todo.util.redis.RedisRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +22,7 @@ import java.util.Properties;
 @AllArgsConstructor
 public class KafkaMessagesConsumer {
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisRepository redisRepository;
     private final MessageUtil messageUtil;
 
     // TODO kafka 에서 데이터 로그를 어떻게 처리할것인가? 생명 주기는?
@@ -58,21 +57,20 @@ public class KafkaMessagesConsumer {
         LocalDateTime now = LocalDateTime.now().minusDays(1);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
         String key;
         if (slackCountAndLengthSum[0] > 0) {
             key = "SLACK_SENT:" + now.format(formatter);
-            valueOperations.set(key, new adminMessage(slackCountAndLengthSum[0], (float) slackCountAndLengthSum[1] / slackCountAndLengthSum[0]));
+            redisRepository.saveSet(key, new AdminMessage(slackCountAndLengthSum[0], (float) slackCountAndLengthSum[1] / slackCountAndLengthSum[0]));
         }
 
         if (emailCountAndLengthSum[0] > 0) {
             key = "EMAIL_SENT:" + now.format(formatter);
-            valueOperations.set(key, new adminMessage(emailCountAndLengthSum[0], (float) emailCountAndLengthSum[1] / emailCountAndLengthSum[0]));
+            redisRepository.saveSet(key, new AdminMessage(emailCountAndLengthSum[0], (float) emailCountAndLengthSum[1] / emailCountAndLengthSum[0]));
         }
 
         if (smsCountAndLengthSum[0] > 0) {
             key = "SMS_SENT:" + now.format(formatter);
-            valueOperations.set(key, new adminMessage(smsCountAndLengthSum[0], (float) smsCountAndLengthSum[1] / smsCountAndLengthSum[0]));
+            redisRepository.saveSet(key, new AdminMessage(smsCountAndLengthSum[0], (float) smsCountAndLengthSum[1] / smsCountAndLengthSum[0]));
         }
 
         kafkaConsumer.close();
@@ -104,7 +102,7 @@ public class KafkaMessagesConsumer {
 
     @AllArgsConstructor
     @Getter
-    private class adminMessage {
+    private static class AdminMessage {
         int mount;
         float average;
     }
